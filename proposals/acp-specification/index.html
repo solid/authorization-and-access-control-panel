@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html about="https://solidproject.org/TR/acp#" dir="ltr" typeof="doap:Specification schema:Article" prefix=": https://solidproject.org/TR/acp# rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# rdfs: http://www.w3.org/2000/01/rdf-schema# owl: http://www.w3.org/2002/07/owl# xsd: http://www.w3.org/2001/XMLSchema# acp: http://www.w3.org/ns/solid/acp# dc: http://purl.org/dc/terms/ doap: http://usefulinc.com/ns/doap# bibo: http://purl.org/ontology/bibo/ schema: http://schema.org/ " lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>Access Control Policies (ACP)</title>
+  <link rel="stylesheet" href="https://www.w3.org/StyleSheets/TR/2016/base.css" media="all" />
+  <style>
+    :root {
+      --lightest-yellow: hsl(47, 100%, 97%);
+      --lighter-yellow: hsl(47, 100%, 87%);
+      --light-yellow: hsl(47, 100%, 77%);
+      --light-green: #b6fdad;
+      --light-red: #ffdede;
+    }
+    h1 {
+      font-size: 220%;
+      font-weight: bold;
+      margin: 0 0 .1em;
+    }
+    header {
+      border-bottom: 1px solid;
+    }
+    dl dd {
+      margin: 0 0 .5em 2em;
+    }
+    table {
+      border-collapse: collapse;
+      border-color: #000000;
+      margin: 16px;
+    }
+    td, th {
+        border-width: 1px;
+        border-style: solid;
+        padding: 5px;
+    }
+    .heading {
+      position: relative;
+    }
+    .self-link {
+      border: none;
+      font-size: 83%;
+      height: 2em;
+      left: calc(-1 * (3.5rem - 26px));
+      opacity: .5;
+      position: absolute;
+      text-align: center;
+      top: 0;
+      transition: opacity .2s;
+      width: calc(3.5rem - 26px);
+    }
+    .self-link:hover {
+      opacity: 1;
+    }
+    .self-link::before {
+      content: "§";
+    }
+    .rfc2119 {
+      text-transform: lowercase;
+      font-style: normal;
+      color: #900;
+    }
+    .term-def-header {
+      font-style: italic;
+      font-weight: bold;
+    }
+    .example {
+      border: 1px solid #999;
+      margin-left: 0;
+      margin-top: 1.5em;
+      padding: 0 2em;
+      padding: 1em;
+    }
+    .example::before {
+      background: white;
+      border: 1px solid #bbb;
+      color: #666;
+      display: block;
+      font-family: sans-serif;
+      margin: -1em 0 0.4em -1em;
+      padding: 0.2em 1em;
+      text-transform: none;
+      width: 16em;
+    }
+    .example-context-graph {
+      background-color: var(--lightest-yellow);
+    }
+    .example-context-graph::before {
+      content: "Example context graph";
+    }
+    .example-authorization-graph {
+      background-color: var(--lighter-yellow);
+    }
+    .example-authorization-graph::before {
+      content: "Example authorization graph";
+    }
+    .example-access-grant-graph {
+      background-color: var(--light-yellow);
+    }
+    .example-access-grant-graph::before {
+      content: "Example access grant graph";
+    }
+  </style>
+</head>
+  <body>
+  <p id="toc-nav">
+    <a id="toc-jump" href="#toc"><span aria-hidden="true">↑</span> <span>Jump to Table of Contents</span></a>
+    <a id="toc-toggle" href="#toc"><span aria-hidden="true">←</span> <span>Collapse Sidebar</span></a>
+  </p>
+  <header class="head">
+    <a class="logo" href="https:&#x2F;&#x2F;solidproject.org&#x2F;"><img alt="Solid" src="solid.svg" width="72" height="66"></a>
+    <h1 property="dc:title">Access Control Policies (ACP)</h1>
+    <h2><span property="rdfs:comment">Solid Editor&#39;s Draft</span> <time property="dc:issued" datetime="2021-04-19">2021-04-19</time></h2>
+    <dl>
+      <dt>This version:</dt>
+      <dd><a href="https:&#x2F;&#x2F;solid.github.io&#x2F;authorization-panel&#x2F;acp-specification">https:&#x2F;&#x2F;solid.github.io&#x2F;authorization-panel&#x2F;acp-specification</a></dd>
+      <dt>Latest published version:</dt>
+      <dd><a href="https:&#x2F;&#x2F;solid.github.io&#x2F;authorization-panel&#x2F;acp-specification">https:&#x2F;&#x2F;solid.github.io&#x2F;authorization-panel&#x2F;acp-specification</a></dd>
+      <dt>Previous version:</dt>
+      <dd><a rel="dcterms:replaces" href="https:&#x2F;&#x2F;github.com&#x2F;solid&#x2F;authorization-panel&#x2F;commits&#x2F;main">https:&#x2F;&#x2F;github.com&#x2F;solid&#x2F;authorization-panel&#x2F;commits&#x2F;main</a></dd>
+      <dt>Editors:</dt>
+      <dd rel="schema:creator schema:author">
+        <span about="https:&#x2F;&#x2F;pod.inrupt.com&#x2F;matthieu&#x2F;profile&#x2F;card#me" typeof="schema:Person">
+          <a rel="schema:url" href="https:&#x2F;&#x2F;github.com&#x2F;matthieubosquet&#x2F;">
+            <span about="https:&#x2F;&#x2F;pod.inrupt.com&#x2F;matthieu&#x2F;profile&#x2F;card#me" property="schema:name">
+              <span property="schema:givenName">Matthieu</span>
+              <span property="schema:familyName">Bosquet</span>
+            </span>
+          </a>
+        </span>      </dd>
+      <dt>Authors:</dt>
+      <dd rel="schema:creator">
+        <span about="https:&#x2F;&#x2F;pod.inrupt.com&#x2F;emmet&#x2F;profile&#x2F;card#me" typeof="schema:Person">
+          <a rel="schema:url" href="https:&#x2F;&#x2F;github.com&#x2F;emmettownsend">
+            <span about="https:&#x2F;&#x2F;pod.inrupt.com&#x2F;emmet&#x2F;profile&#x2F;card#me" property="schema:name">
+              <span property="schema:givenName">Emmet</span>
+              <span property="schema:familyName">Townsend</span>
+            </span>
+          </a>
+        </span>      </dd>
+      <dt>Published:</dt>
+      <dd>
+        <time datatype="xsd:date" property="schema:datePublished">2021-04-19</time>
+      </dd>
+      <dt>Modified:</dt>
+      <dd>
+        <time datatype="xsd:date" property="schema:dateModified">2021-04-19</time>
+      </dd>
+      <dt>Repository:</dt>
+      <dd>
+          <a href="https:&#x2F;&#x2F;github.com&#x2F;solid&#x2F;authorization-panel">GitHub</a>
+      </dd>
+      <dd>
+          <a href="https:&#x2F;&#x2F;github.com&#x2F;solid&#x2F;authorization-panel/issues">Issues</a>
+      </dd>
+      <dt>Test Suite:</dt>
+      <dd>
+          <a href="">Test Suite (Currently missing)</a>
+      </dd>
+    </dl>
+    <p id="copyright" class="copyright">
+      <span property="dc:license">MIT License.</span> Copyright © <span property="dc:dateCopyrighted">2021</span> <a rel="dc:rightsHolder" href="http:&#x2F;&#x2F;www.w3.org&#x2F;community&#x2F;solid&#x2F;">W3C Solid Community Group</a>.
+    </p>
+  </header>
+  <section datatype="rdf:HTML" property="dc:abstract">
+    <h2 id="abstract">Abstract</h2>
+    <div>
+      <p>This document defines the Access Control Policies Language (ACP), a language for describing set of conditions for resource access. !!!TODO REMOVE DEFINITIONS AND PUSH TO TERMINOLOGY!!! These conditions are provided as Access Controls, Policies, and Matchers, expressed in the form of an RDF graph. RDF graphs that are used in this manner are called "authorization graphs". Authorization graphs are applied to resource access descriptions expressed in the form of an RDF graph. RDF graphs that are used in this manner are called "context graphs". As ACP authorization graphs are used to validate whether context graphs satisfy a set of conditions, they can also be viewed as a description of the context graphs that do satisfy these conditions. The result of applying an authorization graph to a context graph is a set of access modes expressed in the form of an RDF graph. RDF graphs that are used in this manner are called "access grant graphs".</p>
+    </div>
+  </section>
+
+  <section datatype="rdf:HTML" property="rdfs:comment">
+    <h2 id="status-of-this-document">Status of This Document</h2>
+    <div>
+      <p>This section describes the status of this document at the time of its publication.</p>
+<p>This document was published by the <a href="https://www.w3.org/community/solid/">Solid Community Group</a> as an Editor’s Draft. The sections that have been incorporated have been reviewed following the <a href="https://github.com/solid/process">Solid process</a>. However, the information in this document is still subject to change. You are invited to <a href="https://github.com/solid/specification/issues">contribute</a> any feedback, comments, or questions you might have.</p>
+<p>Publication as an Editor’s Draft does not imply endorsement by the W3C Membership. This is a draft document and may be updated, replaced or obsoleted by other documents at any time. It is inappropriate to cite this document as other than work in progress.</p>
+<p>This document was produced by a group operating under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>. A human-readable <a href="https://www.w3.org/community/about/agreements/cla-deed/">summary</a> is available.</p>
+    </div>
+  </section>
+  <nav id="toc">
+    <h2 id="table-of-contents" resource=":table-of-contents"><span property="xhv:role" resource="xhv:heading">Table of Contents</span></h2>
+    <ol class="toc" role="directory">
+      <li class="tocline">
+          <a class="tocxref" href="#abstract">Abstract</a>
+      </li>
+      <li class="tocline">
+          <a class="tocxref" href="#status-of-this-document">Status of This Document</a>
+      </li>
+
+      <li class="tocline"><a href="#introduction" class="tocxref"><span class="secno">1</span>Introduction</a>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#terminology" class="tocxref"><span class="secno">1.1</span>Terminology</a>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#document-conventions" class="tocxref"><span class="secno">1.2</span>Document conventions</a>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#conformance" class="tocxref"><span class="secno">1.3</span>Conformance</a>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#acp-example" class="tocxref"><span class="secno">1.4</span>ACP example</a>
+        </li>
+        </ol>
+      </li>
+
+      <li class="tocline"><a href="#context-graph" class="tocxref"><span class="secno">2</span>Context graph</a>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#context-attributes" class="tocxref"><span class="secno">2.1</span>Context attributes</a>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#context-extensibility" class="tocxref"><span class="secno">2.2</span>Context extensibility</a>
+        </li>
+        </ol>
+      </li>
+
+      <li class="tocline"><a href="#authorization-graph" class="tocxref"><span class="secno">3</span>Authorization Graph</a>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#access-control" class="tocxref"><span class="secno">3.1</span>Access control</a>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#resource-access" class="tocxref"><span class="secno">3.1.1</span>Resource access</a>
+          </li>
+          </ol>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#control-resource-access" class="tocxref"><span class="secno">3.1.2</span>Control resource access</a>
+          </li>
+          </ol>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#protected-access-control" class="tocxref"><span class="secno">3.2</span>Protected access control</a>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#protected-resource-access" class="tocxref"><span class="secno">3.2.1</span>Protected resource access</a>
+          </li>
+          </ol>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#protected-control-resource-access" class="tocxref"><span class="secno">3.2.2</span>Protected control resource access</a>
+          </li>
+          </ol>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#policy" class="tocxref"><span class="secno">3.3</span>Policy</a>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#allow-access-modes" class="tocxref"><span class="secno">3.3.1</span>Allow access modes</a>
+          </li>
+          </ol>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#apply-policy" class="tocxref"><span class="secno">3.3.2</span>Apply policy</a>
+          </li>
+          </ol>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#matcher" class="tocxref"><span class="secno">3.4</span>Matcher</a>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#agent-matcher" class="tocxref"><span class="secno">3.4.1</span>Agent matcher</a>
+          </li>
+          </ol>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#client-matcher" class="tocxref"><span class="secno">3.4.2</span>Client matcher</a>
+          </li>
+          </ol>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#issuer-matcher" class="tocxref"><span class="secno">3.4.3</span>Issuer matcher</a>
+          </li>
+          </ol>
+          <ol class="toc">
+
+          <li class="tocline"><a href="#time-matcher" class="tocxref"><span class="secno">3.4.4</span>Time matcher</a>
+          </li>
+          </ol>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#matcher-extensibility" class="tocxref"><span class="secno">3.5</span>Matcher extensibility</a>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#inheritance" class="tocxref"><span class="secno">3.6</span>Inheritance</a>
+        </li>
+        </ol>
+      </li>
+
+      <li class="tocline"><a href="#access-grant-graph" class="tocxref"><span class="secno">4</span>Access grant graph</a>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#access-mode" class="tocxref"><span class="secno">4.1</span>Access mode</a>
+        </li>
+        </ol>
+        <ol class="toc">
+
+        <li class="tocline"><a href="#access-mode-extensibility" class="tocxref"><span class="secno">4.2</span>Access mode extensibility</a>
+        </li>
+        </ol>
+      </li>
+    </ol>
+  </nav>
+    <main>
+
+    <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":" property="bibo:hasPart">
+      <h2 class="heading settled" data-level="1" id="introduction"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#introduction"></a></h2>
+      <p>This section introduces ACP with an overview of the key terminology, and explanation of the conventions used in this document and an example to illustrate basic concepts of resource access description and validation.</p>
+
+      <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":introduction" property="bibo:hasPart">
+        <h3 class="heading settled" data-level="1.1" id="terminology"><span class="secno">1.1. </span><span class="content">Terminology</span><a class="self-link" href="#terminology"></a></h3>
+        <p>Throughout this document, the following terminology is used.</p>
+<div class="def" id="rdf-terminology">
+  <div class="term-def-header">Basic RDF Terminology</div>
+  <div>
+      This document uses the terms <a href="http://www.w3.org/TR/rdf11-concepts/#dfn-resource"><dfn data-dfn-type="dfn" id="dfn-resource">resource</dfn></a>, <a href="http://www.w3.org/TR/rdf11-concepts/#dfn-rdf-graph"><dfn data-dfn-type="dfn" id="dfn-rdf-graph">RDF graph</dfn></a>, <a href="http://www.w3.org/TR/rdf11-concepts/#dfn-rdf-triple"><dfn data-dfn-type="dfn" id="dfn-rdf-triple">RDF triple</dfn></a>, <a href="http://www.w3.org/TR/rdf11-concepts/#dfn-iri"><dfn data-dfn-type="dfn" id="dfn-iri">IRI</dfn></a>, <a href="http://www.w3.org/TR/rdf11-concepts/#dfn-literal"><dfn data-dfn-type="dfn" id="dfn-literal">literal</dfn></a>, <a href="http://www.w3.org/TR/rdf11-concepts/#dfn-blank-node"><dfn data-dfn-type="dfn" id="dfn-blank-node">blank node</dfn></a>, <a href="http://www.w3.org/TR/rdf11-concepts/#dfn-node"><dfn data-dfn-type="dfn" id="dfn-node">node</dfn></a> of an RDF graph, <a href="http://www.w3.org/TR/rdf11-concepts/#dfn-rdf-term"><dfn data-dfn-type="dfn" id="dfn-rdf-term">RDF term</dfn></a>, and <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-subject"><dfn data-dfn-type="dfn" id="dfn-subject">subject</dfn></a>, <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-predicate"><dfn data-dfn-type="dfn" id="dfn-predicate">predicate</dfn></a>, and <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-object"><dfn data-dfn-type="dfn" id="dfn-object">object</dfn></a> of RDF triples, and <a href="https://www.w3.org/TR/rdf11-concepts/#dfn-datatype"><dfn data-dfn-type="dfn" id="dfn-datatype">datatype</dfn></a> as defined in RDF 1.1 Concepts and Abstract Syntax [<cite><a class="bibref" href="#bib-rdf11-concepts">rdf11-concepts</a></cite>].
+  </div>
+</div>
+
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":terminology" property="bibo:hasPart">
+        </section>
+        <h3 class="heading settled" data-level="1.2" id="document-conventions"><span class="secno">1.2. </span><span class="content">Document conventions</span><a class="self-link" href="#document-conventions"></a></h3>
+        <p>Within this document, the following namespace prefix bindings are used:</p>
+<table>
+  <tbody>
+    <tr>
+        <th>Prefix</th>
+        <th>Namespace</th>
+    </tr>
+    <tr>
+        <td><code>acp:</code></td>
+        <td><code><a href="http://www.w3.org/ns/solid/acp#">http://www.w3.org/ns/solid/acp#</a></code></td>
+    </tr>
+    <tr>
+        <td><code>acl:</code></td>
+        <td><code><a href="http://www.w3.org/ns/auth/acl#">http://www.w3.org/ns/auth/acl#</a></code></td>
+    </tr>
+    <tr>
+        <td><code>ex:</code></td>
+        <td><code>https://example.com/</code></td>
+    </tr>
+    <tr>
+        <td><code>rdf:</code></td>
+        <td><code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code></td>
+    </tr>
+    <tr>
+        <td><code>rdfs:</code></td>
+        <td><code>http://www.w3.org/2000/01/rdf-schema#</code></td>
+    </tr>
+    <tr>
+        <td><code>owl:</code></td>
+        <td><code>http://www.w3.org/2002/07/owl#</code></td>
+    </tr>
+  </tbody>
+</table>
+<p>Throughout the document, color-coded boxes containing RDF graphs in Turtle syntax will appear. These fragments of Turtle documents use the prefix bindings given above.</p>
+<pre class="example example-context-graph">
+  # This box contains a context graph
+  # It describes the properties of a resource access
+
+  _:contextX acp:resource ex:resourceA .
+</pre>
+<pre class="example example-authorization-graph">
+  # This box contains an authorization graph
+  # It describes the conditions required for accessing a resource
+
+  ex:resourceA acp:accessControl ex:accessControlB .
+  ex:accessControlB acp:apply ex:accessControlPolicyC .
+</pre>
+<pre class="example example-access-grant-graph">
+  # This box contains an access grant graph
+  # It describes in context the granted access over a resource
+
+  _:contextX
+    acp:resource ex:resourceA ;
+    acp:mode ex:X .
+</pre>
+
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":document-conventions" property="bibo:hasPart">
+        </section>
+        <h3 class="heading settled" data-level="1.3" id="conformance"><span class="secno">1.3. </span><span class="content">Conformance</span><a class="self-link" href="#conformance"></a></h3>
+        <p>All assertions, diagrams, examples, and notes are non-normative, as are all sections explicitly marked non-normative. Everything else is normative.</p>
+<p id="RFC2119-conformance">The key words <em class="rfc2119">MAY</em>, <em class="rfc2119">MUST</em>, <em class="rfc2119">MUST NOT</em>, and <em class="rfc2119">SHOULD</em> are to be interpreted as described in [<cite><a class="bibref" href="#rfc2119">RFC 2119</a></cite>]
+.
+</p>
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":conformance" property="bibo:hasPart">
+        </section>
+        <h3 class="heading settled" data-level="1.4" id="acp-example"><span class="secno">1.4. </span><span class="content">ACP example</span><a class="self-link" href="#acp-example"></a></h3>
+        <p><em>This section is non-normative.</em></p>
+<p>
+  The following example <cite><a class="bibref" href="#def-context-graph">context graph</a></cite>
+ contains the attributes of a resource access and could be translated as <em>"Bob requests resource A using client application B with his identity asserted by identity provider C."</em>:
+</p>
+<pre id="acp-example-context-graph" class="example example-context-graph">
+  _:contextX
+    a acp:Context ;
+    acp:agent ex:Bob ;
+    acp:resource ex:resourceA ;
+    acp:client ex:ClientApplicationB ;
+    acp:issuer ex:IdentityProviderC .
+</pre>
+<p>
+  The following example <cite><a class="bibref" href="#def-authorization-graph">authorization graph</a></cite>
+ contains the conditions of access to resource A and could be translated as <em>"Access to resource A is mandated by access control B. Access control B applies policy C which allows access mode acl:Read when agent matcher D is satisfied. The agent matcher D is satisfied when Alice or Bob are the context graph agent."</em>:
+</p>
+<pre id="acp-example-authorization-graph" class="example example-authorization-graph">
+  ex:resourceA acp:accessControl ex:accessControlB .
+
+  ex:accessControlB acp:apply ex:PolicyC .
+
+  ex:PolicyC
+    acp:anyOf ex:agentMatcherD ;
+    acp:allow acl:Read .
+
+  ex:agentMatcherD
+    acp:agent ex:Alice, ex:Bob .
+</pre>
+<p>
+  The following example <cite><a class="bibref" href="#def-access-grant-graph">access grant graph</a></cite>
+ is the result of applying the previous authorization graph to the previous context graph. Since Bob was matched as the context agent, the policy allowing acl:Read applies. The following resource access graph could be read as <em>"The access mode acl:Read has been granted over resource A."</em>:
+</p>
+<pre id="acp-example-access-grant-graph" class="example example-access-grant-graph">
+  _:contextX
+    acp:agent ex:Bob ;
+    acp:resource ex:resourceA ;
+    acp:client ex:ClientApplicationB ;
+    acp:issuer ex:IdentityProviderC ;
+    acp:mode acl:Read .
+</pre>
+
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":acp-example" property="bibo:hasPart">
+        </section>
+      </section>
+      <h2 class="heading settled" data-level="2" id="context-graph"><span class="secno">2. </span><span class="content">Context graph</span><a class="self-link" href="#context-graph"></a></h2>
+      <p>This section introduces the ACP constructs describing the attributes of resource access. In ACP, resource access attributes are <a href="#matcher">matched</a> to a set of conditions to determine a granted set of access modes over a resource. If no resource access attribute is matched, the granted set of access modes over a resource is always empty.</p>
+
+      <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":context-graph" property="bibo:hasPart">
+        <h3 class="heading settled" data-level="2.1" id="context-attributes"><span class="secno">2.1. </span><span class="content">Context attributes</span><a class="self-link" href="#context-attributes"></a></h3>
+        <p>
+  An ACP context graph has type <code>acp:Context</code> and is described via RDFS sub-properties of the <code>acp:attribute</code> predicate. The following are definitions of standard ACP context attributes:
+</p>
+<dl>
+  <dt id="acp-attribute"><code>acp:attribute</code></dt>
+  <dd about="acp:attribute"><span property="rdfs:comment">An <span property="rdfs:label">attribute</span> describing resource access. <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> attributes have range <code property="rdfs:range" resource="rdfs:Resource">rdfs:Resource</code> and domain <code property="rdfs:domain" resource="acp:Context">acp:Context</code>.</span></dd>
+  <dt id="acp-resource"><code>acp:resource</code></dt>
+  <dd about="acp:resource"><span property="rdfs:comment">A <span property="rdfs:label">resource</span> subjected to ACP access control.</span> <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> resource is a sub property of <code property="rdfs:subPropertyOf" resource="acp:attribute">acp:attribute</code>.</dd>
+  <dt id="acp-agent"><code>acp:agent</code></dt>
+  <dd about="acp:agent"><span property="rdfs:comment">An <span property="rdfs:label">agent</span> trying to access a resource.</span> <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> agent is a sub property of <code property="rdfs:subPropertyOf" resource="acp:attribute">acp:attribute</code>.</dd>
+  <dt id="acp-creator"><code>acp:creator</code></dt>
+  <dd about="acp:creator"><span property="rdfs:comment">An agent credited as the <span property="rdfs:label">creator</span> of a resource.</span> <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> creator is a sub property of <code property="rdfs:subPropertyOf" resource="acp:attribute">acp:attribute</code>.</dd>
+  <dt id="acp-owner"><code>acp:owner</code></dt>
+  <dd about="acp:owner"><span property="rdfs:comment">An agent credited as the <span property="rdfs:label">owner</span> of a resource.</span> <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> owner is a sub property of <code property="rdfs:subPropertyOf" resource="acp:attribute">acp:attribute</code>.</dd>
+  <dt id="acp-client"><code>acp:client</code></dt>
+  <dd about="acp:client"><span property="rdfs:comment">A <span property="rdfs:label">client</span> application used to access a resource.</span> <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> client is a sub property of <code property="rdfs:subPropertyOf" resource="acp:attribute">acp:attribute</code>.</dd>
+  <dt id="acp-issuer"><code>acp:issuer</code></dt>
+  <dd about="acp:issuer"><span property="rdfs:comment">An identity provider credited as the <span property="rdfs:label">issuer</span> of the credentials that asserted the identity of the agent trying to access a resource.</span> <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> issuer is a sub property of <code property="rdfs:subPropertyOf" resource="acp:attribute">acp:attribute</code>.</dd>
+  <dt id="acp-time"><code>acp:time</code></dt>
+  <dd about="acp:time"><span property="rdfs:comment">A <span property="rdfs:label">time</span> at which a resource is accessed.</span> <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> time is a sub property of <code property="rdfs:subPropertyOf" resource="acp:attribute">acp:attribute</code>.</dd>
+</dl>
+
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":context-attributes" property="bibo:hasPart">
+        </section>
+        <h3 class="heading settled" data-level="2.2" id="context-extensibility"><span class="secno">2.2. </span><span class="content">Context extensibility</span><a class="self-link" href="#context-extensibility"></a></h3>
+        <p>
+  ACP's context graphs can be extended to provide the information required for matching new types of conditions.
+</p>
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":context-extensibility" property="bibo:hasPart">
+        </section>
+      </section>
+      <h2 class="heading settled" data-level="3" id="authorization-graph"><span class="secno">3. </span><span class="content">Authorization Graph</span><a class="self-link" href="#authorization-graph"></a></h2>
+      <p>This section introduces the ACP constructs mandating resource access conditions. In ACP, an Access Control grants access modes to resources through validation of Policies and context Matchers.</p>
+
+      <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":authorization-graph" property="bibo:hasPart">
+        <h3 class="heading settled" data-level="3.1" id="access-control"><span class="secno">3.1. </span><span class="content">Access control</span><a class="self-link" href="#access-control"></a></h3>
+        <p>
+  An access control is the entry point of any ACP authorization graph and determines access modes to be granted over:
+</p>
+<ul>
+  <li>A resource; and</li>
+  <li>Its associated control resource (itself).</li>
+</ul>
+<p>
+  An access control can be linked to the resource it mandates access over via the <code>acp:accessControl</code> predicate.
+</p>
+<p>
+  The following example authorization graph denotes that access control A mandates access over resource X:
+</p>
+<pre id="access-control-example-authorization-graph" class="example example-authorization-graph">
+  ex:resourceX acp:accessControl ex:accessControlA .
+</pre>
+
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":access-control" property="bibo:hasPart">
+          <h4 class="heading settled" data-level="3.1.1" id="resource-access"><span class="secno">3.1.1. </span><span class="content">Resource access</span><a class="self-link" href="#resource-access"></a></h4>
+          <p>
+  The access modes granted for access to a resource are determined through an access control via the <code>acp:apply</code> predicate.
+</p>
+<p>
+  The following example access control A will grant access modes allowed by policy B over resource X:
+</p>
+<pre id="resource-access-example-authorization-graph" class="example example-authorization-graph">
+  ex:resourceX acp:accessControl ex:accessControlA .
+
+  ex:accessControlA acp:apply ex:policyB .
+</pre>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":resource-access" property="bibo:hasPart">
+          </section>
+          <h4 class="heading settled" data-level="3.1.2" id="control-resource-access"><span class="secno">3.1.2. </span><span class="content">Control resource access</span><a class="self-link" href="#control-resource-access"></a></h4>
+          <p>
+  A control resource is a resource that mandates access over another resource and itself, that is, an <code>acp:AccessControl</code>.
+</p>
+<p>
+  The access modes granted for access to a control resource are determined through its <code>acp:access</code> predicate.
+</p>
+<p>
+  The following example access control A will grant access modes allowed by policy B over itself:
+</p>
+<pre id="control-resource-access-example-authorization-graph" class="example example-authorization-graph">
+  ex:accessControlA acp:access ex:policyB .
+</pre>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":control-resource-access" property="bibo:hasPart">
+          </section>
+        </section>
+        <h3 class="heading settled" data-level="3.2" id="protected-access-control"><span class="secno">3.2. </span><span class="content">Protected access control</span><a class="self-link" href="#protected-access-control"></a></h3>
+        <p>
+  A protected access control is contributing to a control resource's policies while mandating access over itself. A protected control resource can be linked to a control resource via the <code>acp:applyProtected</code> predicate.
+</p>
+<p>
+  The following example authorization graph denotes that the protected access control B contributes policies to access control A for mandating access over resource X:
+</p>
+<pre id="access-control-example-authorization-graph" class="example example-authorization-graph">
+  ex:resourceX acp:accessControl ex:accessControlA .
+  ex:accessControlA acp:applyProtected ex:accessControlB .
+</pre>
+
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":protected-access-control" property="bibo:hasPart">
+          <h4 class="heading settled" data-level="3.2.1" id="protected-resource-access"><span class="secno">3.2.1. </span><span class="content">Protected resource access</span><a class="self-link" href="#protected-resource-access"></a></h4>
+          <p>
+  The protected access controls contribute to access modes granted for access to a resource via the <code>acp:apply</code> predicate.
+</p>
+<p>
+  The following example access control A will grant access modes allowed by policy B and policy C over resource X:
+</p>
+<pre id="protected-access-control-example-authorization-graph" class="example example-authorization-graph">
+  ex:resourceX acp:accessControl ex:accessControlA .
+
+  ex:accessControlA
+    acp:apply ex:policyB ;
+    acp:applyProtected [
+      acp:apply ex:policyC .
+    ] .
+</pre>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":protected-resource-access" property="bibo:hasPart">
+          </section>
+          <h4 class="heading settled" data-level="3.2.2" id="protected-control-resource-access"><span class="secno">3.2.2. </span><span class="content">Protected control resource access</span><a class="self-link" href="#protected-control-resource-access"></a></h4>
+          <p>
+  The access modes granted for access to a protected control resource are determined through its <code>acp:access</code> predicate.
+</p>
+<p>
+  The following example protected access control B will grant access modes allowed by policy C over itself:
+</p>
+<pre id="protected-access-control-example-authorization-graph" class="example example-authorization-graph">
+  ex:resourceX acp:accessControl ex:accessControlA .
+
+  ex:accessControlA acp:applyProtected ex:protectedAccessControlB .
+
+  ex:protectedAccessControlB acp:access ex:policyC .
+</pre>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":protected-control-resource-access" property="bibo:hasPart">
+          </section>
+        </section>
+        <h3 class="heading settled" data-level="3.3" id="policy"><span class="secno">3.3. </span><span class="content">Policy</span><a class="self-link" href="#policy"></a></h3>
+        <p>
+  Policies are reusable units of access control in ACP. Policies define a set of allowed and denied access modes as well as the conditions required for them to apply via the <code>acp:allOf</code>, <code>acp:anyOf</code> and <code>acp:noneOf</code> predicates linking them to matchers.
+</p>
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":policy" property="bibo:hasPart">
+          <h4 class="heading settled" data-level="3.3.1" id="allow-access-modes"><span class="secno">3.3.1. </span><span class="content">Allow access modes</span><a class="self-link" href="#allow-access-modes"></a></h4>
+          <p>
+  In ACP, an access mode is allowed if:
+</p>
+<ul>
+  <li>A policy that applies allows it; and</li>
+  <li>No policy that apply deny it.</li>
+</ul>
+<p>
+  For example, the following example authorization graph could be translated as such: "Access control A, assuming that both policy B and C apply will grant access mode <code>acl:Read</code> over the resource it controls. It will not grant access mode <code>acl:Write</code> even though policy B allows it because policy C denies it".
+</p>
+<pre id="control-resource-access-example-authorization-graph" class="example example-authorization-graph">
+  ex:accessControlA
+    acp:apply ex:policyB, ex:policyC .
+  
+  ex:policyB
+    acp:allow acl:Read, acl:Write .
+
+  ex:policyC
+    acp:deny acl:Write .
+</pre>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":allow-access-modes" property="bibo:hasPart">
+          </section>
+          <h4 class="heading settled" data-level="3.3.2" id="apply-policy"><span class="secno">3.3.2. </span><span class="content">Apply policy</span><a class="self-link" href="#apply-policy"></a></h4>
+          <p>
+  In ACP, a policy is applied if:
+</p>
+<ul>
+  <li>At least one matcher it uses matches the given context; and</li>
+  <li>All the conditions it defines are satisfied.</li>
+</ul>
+<p>
+  Policy conditions behave like intersection, union and exclusion operators. In order to be satisfied:
+</p>
+<ul>
+  <li>allOf requires all of its matchers to match the given context;</li>
+  <li>anyOf requires one of its matchers to match the given context;</li>
+  <li>noneOf requires none of its matchers to match the given context.</li>
+</ul>
+<p>
+  Note that the noneOf condition excludes matches, therefore, a policy without a satisfied allOf or anyOf condition never applies.
+</p>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":apply-policy" property="bibo:hasPart">
+          </section>
+        </section>
+        <h3 class="heading settled" data-level="3.4" id="matcher"><span class="secno">3.4. </span><span class="content">Matcher</span><a class="self-link" href="#matcher"></a></h3>
+        <p>
+  Matchers are reusable units of access control in ACP. !!!ADD NON NORMATIVE FOR MULTI MATCHER CLIENT/AGENT
+  !!! HOW TO DISCOVER Matchers
+  !!! HOW TO COMMUNICATE CAPABILITIES (context predicates) OF AN ACP ENGINE
+</p>
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":matcher" property="bibo:hasPart">
+          <h4 class="heading settled" data-level="3.4.1" id="agent-matcher"><span class="secno">3.4.1. </span><span class="content">Agent matcher</span><a class="self-link" href="#agent-matcher"></a></h4>
+          <p id="acp-agent-matcher">
+  <span about="acp:AgentMatcher" typeof="rdfs:Class"><span property="rdfs:comment">The ACP <span property="rdfs:label">agent matcher</span> relies on the <a href="#acp-agent"><code>acp:agent</code></a> predicate and three named individuals to define sets of matching agents.</span></span>
+</p>
+<dl>
+  <dt id="acp-public-agent"><code>acp:PublicAgent</code></dt>
+  <dd about="acp:PublicAgent" typeof="owl:NamedIndividual"><span property="rdfs:comment">The <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> <span property="rdfs:label">Public Agent</span> matches all contexts. In an authorization graph, the ACP Public Agent can be used as the object in a triple where the subject is a matcher and the predicate is <code>acp:agent</code>.</span></dd>
+  <dt id="acp-authenticated-agent"><code>acp:AuthenticatedAgent</code></dt>
+  <dd about="acp:AuthenticatedAgent" typeof="owl:NamedIndividual"><span property="rdfs:comment">The <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> <span property="rdfs:label">Authenticated Agent</span> matches all contexts where an agent is defined. In an authorization graph, the ACP Authenticated Agent can be used as the object in a triple where the subject is a matcher and the predicate is <code>acp:agent</code>.</span></dd>
+  <dt id="acp-creator-agent"><code>acp:CreatorAgent</code></dt>
+  <dd about="acp:CreatorAgent" typeof="owl:NamedIndividual"><span property="rdfs:comment">The <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> <span property="rdfs:label">Creator Agent</span> matches all contexts where the creator matches the defined agent. In an authorization graph, the ACP Creator Agent can be used as the object in a triple where the subject is a matcher and the predicate is <code>acp:agent</code>.</span></dd>
+</dl>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":agent-matcher" property="bibo:hasPart">
+          </section>
+          <h4 class="heading settled" data-level="3.4.2" id="client-matcher"><span class="secno">3.4.2. </span><span class="content">Client matcher</span><a class="self-link" href="#client-matcher"></a></h4>
+          <p id="acp-client-matcher">
+  <span about="acp:ClientMatcher" typeof="rdfs:Class"><span property="rdfs:comment">The ACP <span property="rdfs:label">client matcher</span> relies on the <a href="#acp-client"><code>acp:client</code></a> predicate to define sets of matching clients.</span></span>
+</p>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":client-matcher" property="bibo:hasPart">
+          </section>
+          <h4 class="heading settled" data-level="3.4.3" id="issuer-matcher"><span class="secno">3.4.3. </span><span class="content">Issuer matcher</span><a class="self-link" href="#issuer-matcher"></a></h4>
+          <p id="acp-issuer-matcher">
+  <span about="acp:IssuerMatcher" typeof="rdfs:Class"><span property="rdfs:comment">The ACP <span property="rdfs:label">issuer matcher</span> relies on the <a href="#acp-issuer"><code>acp:issuer</code></a> predicate to define sets of matching issuers.</span></span>
+</p>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":issuer-matcher" property="bibo:hasPart">
+          </section>
+          <h4 class="heading settled" data-level="3.4.4" id="time-matcher"><span class="secno">3.4.4. </span><span class="content">Time matcher</span><a class="self-link" href="#time-matcher"></a></h4>
+          <p id="acp-time-matcher">
+  <span about="acp:TimeMatcher" typeof="rdfs:Class"><span property="rdfs:comment">The ACP <span property="rdfs:label">time matcher</span> relies on the <a href="#acp-time"><code>acp:time</code></a> predicate to define ranges of matching times.</span></span>
+</p>
+
+
+          <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":time-matcher" property="bibo:hasPart">
+          </section>
+        </section>
+        <h4 class="heading settled" data-level="3.5" id="matcher-extensibility"><span class="secno">3.5. </span><span class="content">Matcher extensibility</span><a class="self-link" href="#matcher-extensibility"></a></h4>
+        <p>
+  In order to extend the set of conditions enforceable for resource access, new matchers can be created. A new matcher should apply to new context attributes in order to maintain consistency and portability of authorization graphs accross ACP resolution engines. However, refining the behaviour of standard matchers to the needs of a particular system is possible. The algorithms of this specification are not normative.
+</p>
+<p>
+  A new context attribute could be, for example, created to validate resource access based on verifiable credentials (VC). This could be achieved by creating a new context attribute <code>acp:vc</code> and designing the corresponding VC matching algorithm as an extension to ACP.
+</p>
+
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":matcher-extensibility" property="bibo:hasPart">
+        </section>
+        <h4 class="heading settled" data-level="3.6" id="inheritance"><span class="secno">3.6. </span><span class="content">Inheritance</span><a class="self-link" href="#inheritance"></a></h4>
+        <p>
+  Policies are inherited from one Access Control to another via the resources they're linked to.
+</p>
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":inheritance" property="bibo:hasPart">
+        </section>
+      </section>
+      <h2 class="heading settled" data-level="4" id="access-grant-graph"><span class="secno">4. </span><span class="content">Access grant graph</span><a class="self-link" href="#access-grant-graph"></a></h2>
+      <p>This section introduces the ACP constructs describing resource access grants. In ACP, resource access is granted as a set of allowed access modes over a resource. By default, no access mode is granted over resources.</p>
+
+      <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":access-grant-graph" property="bibo:hasPart">
+        <h3 class="heading settled" data-level="4.1" id="access-mode"><span class="secno">4.1. </span><span class="content">Access mode</span><a class="self-link" href="#access-mode"></a></h3>
+        <p>
+  An ACP access grant graph consists of access modes granted over a resource via the <code>acp:mode</code> predicate:
+</p>
+<dl>
+  <dt id="acp-mode"><code>acp:mode</code></dt>
+  <dd about="acp:mode"><span property="rdfs:comment">A <span property="rdfs:label">mode</span> granted for resource access.</span> <span property="rdfs:isDefinedBy" resource="acp:">ACP</span> modes have range <code property="rdfs:range" resource="acp:AccessMode">acp:AccessMode</code> and domain <code property="rdfs:domain" resource="rdfs:Resource">rdfs:Resource</code>.</dd>
+</dl>
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":access-mode" property="bibo:hasPart">
+        </section>
+        <h3 class="heading settled" data-level="4.2" id="access-mode-extensibility"><span class="secno">4.2. </span><span class="content">Access mode extensibility</span><a class="self-link" href="#access-mode-extensibility"></a></h3>
+        <p>
+  There is no standard access modes defined by ACP. Instead, one might taylor to the needs of an application the modes and granularity thereof required.
+</p>
+<p>
+  For example, one might use the standard access modes defined in the Web Access Control Specification's ACL ontology. The following graph indicate granting <code>acl:Read</code> and <code>acl:Write</code> over resource A:
+</p>
+<pre id="access-mode-extensibility-example-access-grant-graph" class="example example-access-grant-graph">
+  ex:resourceA acp:mode acl:Read, acl:Write .
+</pre>
+
+
+        <section datatype="rdf:HTML" typeof="bibo:Chapter" resource=":access-mode-extensibility" property="bibo:hasPart">
+        </section>
+      </section>
+    </section>
+    </main>
+  <p role="navigation" id="back-to-top"><a href="#toc"><abbr title="Back to top">↑</abbr></a></p>
+
+  <script src="https://www.w3.org/scripts/TR/2016/fixup.js"></script>
+
+  <script type="text/javascript">// <![CDATA[
+  /* script-dfn-panel */
+  document.body.addEventListener("click", function(e) {
+    var queryAll = function(sel) { return [].slice.call(document.querySelectorAll(sel)); }
+    // Find the dfn element or panel, if any, that was clicked on.
+    var el = e.target;
+    var target;
+    var hitALink = false;
+    while(el.parentElement) {
+        if(el.tagName == "A") {
+            // Clicking on a link in a <dfn> shouldn't summon the panel
+            hitALink = true;
+        }
+        if(el.classList.contains("dfn-paneled")) {
+            target = "dfn";
+            break;
+        }
+        if(el.classList.contains("dfn-panel")) {
+            target = "dfn-panel";
+            break;
+        }
+        el = el.parentElement;
+    }
+    if(target != "dfn-panel") {
+        // Turn off any currently "on" or "activated" panels.
+        queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(function(el){
+            el.classList.remove("on");
+            el.classList.remove("activated");
+        });
+    }
+    if(target == "dfn" && !hitALink) {
+        // open the panel
+        var dfnPanel = document.querySelector(".dfn-panel[data-for='" + el.id + "']");
+        if(dfnPanel) {
+            dfnPanel.classList.add("on");
+            var rect = el.getBoundingClientRect();
+            dfnPanel.style.left = window.scrollX + rect.right + 5 + "px";
+            dfnPanel.style.top = window.scrollY + rect.top + "px";
+            var panelRect = dfnPanel.getBoundingClientRect();
+            var panelWidth = panelRect.right - panelRect.left;
+            if(panelRect.right > document.body.scrollWidth && (rect.left - (panelWidth + 5)) > 0) {
+                // Reposition, because the panel is overflowing
+                dfnPanel.style.left = window.scrollX + rect.left - (panelWidth + 5) + "px";
+            }
+        } else {
+            console.log("Couldn't find .dfn-panel[data-for='" + el.id + "']");
+        }
+    } else if(target == "dfn-panel") {
+        // Switch it to "activated" state, which pins it.
+        el.classList.add("activated");
+        el.style.left = null;
+        el.style.top = null;
+    }
+
+  });
+    // ]]></script>
+  </body>
+</html>

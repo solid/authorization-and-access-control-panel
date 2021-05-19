@@ -1,0 +1,15 @@
+Definitions {#definitions}
+=====================
+
+An <dfn>agent</dfn> is a distinct individual, group, organization, or piece of
+software with an [=identity=] that can be strongly authenticated.
+
+An <dfn>identity</dfn> is used to uniquely identify a given [=agent=],
+represented by a unique [[URI]]. Examples of compatible identity systems
+include [[WEBID]] and [[DID]].
+
+A <dfn>resource</dfn> is the target of an HTTP request identified by a
+[[URI]], as defined in [[!RFC7231]].
+
+An <dfn>access control statement</dfn> is an RDF statement [[rdf11-concepts]]
+used to define [=resource=] access as per the ACP specification.

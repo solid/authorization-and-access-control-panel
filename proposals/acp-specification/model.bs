@@ -1,0 +1,106 @@
+Data Model {#model}
+=====================
+
+The ACP data model describes how a set of [=Access Control Statements=] define
+access to a [=Resource=]. Via application of [=Policies=] and [=Rules=], a set
+of [=Access Modes=] is granted for each [=Resource=] and its associated
+[=Access Control Statements=]. [=Access Control Statements=] can be inherited
+and can be protected.
+
+## Access Control ## {#data-model-access-control}
+
+An <dfn>Access Control</dfn> is linked to every [=Resource=] and determines the
+[=Policies=] that will grant [=Access Modes=] to that [=Resource=] and to itself.
+
+<figure id="figure-access-control">
+  <figcaption>An [=Access Control=]</figcaption>
+  <pre highlight="turtle">
+  <#access-control>
+    a acp:AccessControl ;
+    acp:access <#policy-access-1>, <#policy-access-2> ;
+    acp:accessMembers <#policy-access-members> ;
+    acp:apply <#policy-apply> ;
+    acp:applyMembers <#policy-apply-members> ;
+    acp:applyProtected <#access-control-protected> .
+  </pre>
+</figure>
+
+```typescript
+interface AccessControl {
+  readonly access: Policy[];
+  readonly accessMembers: Policy[];
+  readonly apply: Policy[];
+  readonly applyMembers: Policy[];
+  readonly applyProtected: ProtectedAccessControl[];
+
+  accessModes(context: Context): Set<AccessMode>;
+  applyModes(context: Context): Set<AccessMode>;
+  applyProtectedModes(context: Context): 
+    { accessModes: Set<AccessMode>, protectedAccessControl: string }[];
+  grants(context: Context): AccessControlGrant;
+}
+
+interface ProtectedAccessControl
+  extends Pick<AccessControl, "access" | "apply" | "applyMembers"> {}
+```
+
+<table class="classinfo data" id="class-access-control">
+  <colgroup></colgroup>
+  <colgroup></colgroup>
+  <colgroup></colgroup>
+  <thead>
+    <tr>
+      <th colspan=3>
+        [AccessControl](acp.ttl)
+      </th>
+    </tr>
+    <tr>
+      <th>Property</th>
+      <th>Range</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>access</td>
+      <td>[Policy](#class-policy)</td>
+      <td>The [=Policies=] that will contribute to the granted [=Access Modes=] for control of the resource.</td>
+    </tr>
+    <tr>
+      <td>accessMembers</td>
+      <td>[Policy](#class-policy)</td>
+      <td>The [=Policies=] that will contribute to the granted [=Access Modes=] for control of the descendants of the resource.</td>
+    </tr>
+    <tr>
+      <td>apply</td>
+      <td>[Policy](#class-policy)</td>
+      <td>The [=Policies=] that will contribute to the granted [=Access Modes=] for access to the resource.</td>
+    </tr>
+    <tr>
+      <td>applyMembers</td>
+      <td>[Policy](#class-policy)</td>
+      <td>The [=Policies=] that will contribute to the granted [=Access Modes=] for access to the descendants of the resource.</td>
+    </tr>
+    <tr>
+      <td>applyProtected</td>
+      <td>[Policy](#class-policy)</td>
+      <td>The [=Policies=] that will contribute to the granted [=Access Modes=] for access to the resource and its descendants and have their own controled access defined, that is, control of those [=Policies=] could be more restrictive than control of the resource.</td>
+    </tr>
+  </tbody>
+</table>
+
+
+## Policy ## {#data-policy}
+
+A <dfn>Policy</dfn> bla.
+
+
+## Rule ## {#data-model-rule}
+
+A <dfn>Rule</dfn> bla.
+
+
+## Access Mode ## {#data-model-access-mode}
+
+An <dfn>Access Mode</dfn> bla.
+
