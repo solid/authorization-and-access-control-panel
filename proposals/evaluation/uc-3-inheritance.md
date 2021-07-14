@@ -28,7 +28,6 @@ We have the following hierarchy of resources (shown in more detail in the UCR):
 </weekly-status/2021-05-12/>
 ```
 
-
 ## 1. Read access to a group on a collection of resources
 
 We want to enable read access to all resources contained in `</weekly-status/>` for a group of people (`ex:Alice` & `ex:Bob`).
@@ -54,7 +53,7 @@ The research policy `</acp/research#p1>` gives read access to all agents matched
   acp:allow acl:Read .
 ```
 
-The access control `</weekly-status/.acp#ac1>` applies to all resources contained by `</weekly-status/>` and via policy `</acp/research#p1>` enables read access for all agents matched by `</acp/research#m1>`:
+The access control `</weekly-status/.acp#ac1>` applies to all resources contained in `</weekly-status/>` and enables read access to all agents matched by `</acp/research#m1>`:
 
 ```turtle
 # Resource: </weekly-status/.acp>
@@ -64,8 +63,18 @@ The access control `</weekly-status/.acp#ac1>` applies to all resources containe
   acp:applyMembers </acp/research#p1> . # applies the policy to all resources contained by </weekly-status/>
 ```
 
-Todo:  what is the ACR for 
-`</weekly-status/2021-04-28/report.md>` and what information is in it?
+An unauthenticated client making a GET on `</weekly-status/>` container will receive a `Link: <.acp>; rel="access-control"` header in the `401` response that points to the above `<.acp>`. 
+This relation is what makes the contents of `</weekly-status/.acp>` authoritative, and is therefore the information the client can use to decide what credentials to present.
+
+A unauthenticated client making a request to  `</weekly-status/2021-04-28/report.md>` will receive in the header of a 401 a link to `</weekly-status/2021-04-28/report.acp>`. 
+If dereferences this resource will contain
+
+```turtle
+# Resource: </weekly-status/2021-04-28/report.acp>
+# What does this contain?
+# Does it contain a copy of </weekly-status/.acp> ?
+# Or does it contain a link to it?
+```
    
 ### WAC
 
@@ -90,6 +99,18 @@ The acl enabling read access to all resources contained by `</weekly-status/>` f
   acl:mode acl:Read .
 ```
 
+An unauthenticated client making a GET on the `</weekly-status/>` container will receive a `Link: <.acp>; rel="acl"` header in the `401` response that points to the above `<.acl>`. 
+This relation is what makes the contents of `</weekly-status/.acl>` authoritative, and is therefore the information the client can use to decide what credentials to present.
+
+A unauthenticated client making a GET request to  `</weekly-status/2021-04-28/report.md>` will receive in the header of a `401`, either of the following: 
+
+1) a `Link` to `</weekly-status/.acl>`. 
+2) a `Link` to `</weekly-status/2021-04-28/report.acl>`
+
+In the case of (1) the client will be able to find out what identity to provide by looking at `</weekly-status/.acl>`. But if the controller wants to add a new editor to `<report.md>` then it will have to add that to the root `</weekly-status/.acl>` as there is no agreed way to create a new acl out of nothing.
+
+In the case of (2) a controller with the contents of `</weekly-status/.acl>` will not be applicable, since by the fact of existing `</weekly-status/2021-04-28/report.acl>` will override the default. 
+As a result new access control rules will need to be placed in `</weekly-status/2021-04-28/report.acl>`, potentially duplicating what was in the default acl. 
 
 ## 2. Changing permissions to a subcollection
 
@@ -130,7 +151,11 @@ The access control `</weekly-status/2021-04-28/.acp#ac1>` applies to all resourc
 
 ### WAC
 
-To give Carol read and write access to the `</weekly-status/2021-04-28/>` collection and its content, Bob must create a new effective ACL resource, `</weekly-status/2021-04-28/.acl>`, which must express all permissions that are to govern access to `</weekly-status/2021-04-28/>`. In other words, to maintain the access permissions previously defined in `</weekly-status/.acl>`, Bob will need to include an authorization defining read access for the research group, along with an authorization defining read and write access for Carol, in the new `</weekly-status/2021-04-28/.acl>`.
+To give Carol read and write access to the `</weekly-status/2021-04-28/>` collection and its content, Bob must create a new effective ACL resource, `</weekly-status/2021-04-28/.acl>` which would express all permissions that are to govern access to `</weekly-status/2021-04-28/>`.
+
+Todo: How does a client create a new acl if one does not exist before?
+
+ In other words to maintain the access permissions previously defined in `</weekly-status/.acl>`, Bob will need to include an authorization defining read access for the research group, along with an authorization defining read and write access for Carol, in the new `</weekly-status/2021-04-28/.acl>`.
 
 ```Turtle
 # Resource: </weekly-status/2021-04-28/.acl>
@@ -171,9 +196,17 @@ However, if WAC's use of `acl:default` were to be relaxed as described in [issue
 See also: https://github.com/solid/authorization-panel/pull/216#discussion_r665230245
 
 
-### WAC+ ac:imports
+### WAC+ ac:imports +acr 
 
-[WAC+:imports](https://github.com/solid/authorization-panel/issues/210) works just as WAC does above with `:default` working as shown. The advantage of `ac:imports` is that the resource  `</weekly-status/2021-04-28/.ac>` need only be set to contain:
+[WAC+:imports](https://github.com/solid/authorization-panel/issues/210) is explained most easily if we also require every
+resource to link to its own ACR, as ACP does.
+
+We keep `wac:default` working as currently specified.
+ 
+A unauthenticated client that makes a GET on `</weekly-status/2021-04-28/>` and receives a `401` with a `Link` to `</weekly-status/2021-04-28/>`. 
+
+If the client is the controler of the container it can do a
+PUT with the following rules:
 
 ```Turtle
 # Resource: </weekly-status/2021-04-28/.ac>
